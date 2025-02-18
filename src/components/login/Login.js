@@ -1,156 +1,135 @@
-
-import { useNavigate } from 'react-router-dom'
-import styles from './login.module.css'
-import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import styles from './login.module.css';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from '../nav/Nav';
 
-
 function Login() {
-    // const [loginData,setLoginData] = useState()
     const [studentData, setStudentData] = useState([]);
-    const [facultyData, setPassData] = useState([]);
-    const [radioData, setRadioData] = useState('')
-    const [borderData, setBorderData] = useState({ borderId: '', borderPass: '' })
-    const [flag, setFlag] = useState({ flagId: false, flagPass: false })
+    const [facultyData, setFacultyData] = useState([]);
+    const [radioData, setRadioData] = useState('');
+    const [flag, setFlag] = useState({ flagStudent: false, flagFaculty: false });
     const [validated, setValidated] = useState(false);
-  
 
+    const navigate = useNavigate();
 
-    const Navigate = useNavigate()
-
-    const idRef = useRef(null)
-    const passRef = useRef(null)
-
-
+    const idRef = useRef(null);
+    const passRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            const studentResponse = await axios.get('http://localhost:8000/Student')
-            setStudentData(studentResponse.data)
-            const passResponse = await axios.get('http://localhost:8000/Faculty')
-            setPassData(passResponse.data)
-        }
-        fetchData()
-    }, [])
-
+            try {
+                const studentResponse = await axios.get('http://localhost:8000/Student');
+                setStudentData(studentResponse.data);
+                const facultyResponse = await axios.get('http://localhost:8000/Faculty');
+                setFacultyData(facultyResponse.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleSubmit = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-
-        setValidated(true);
-
         event.preventDefault();
-        // if (flag === true) {
-        //     Navigate('/student')
-        // }
+        const form = event.currentTarget;
+
+        if (!form.checkValidity()) {
+            event.stopPropagation();
+        } else {
+            if (flag.flagStudent) {
+                navigate('/student');
+            } else if (flag.flagFaculty) {
+                navigate('/faculty');
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+        setValidated(true);
     };
 
-    const handleId = () => {
-        const value = idRef.current.value
-        handleFlag()
-    }
+    const handleFlag = (selectedRole) => {
+        const enteredId = idRef.current?.value;
+        const enteredPassword = passRef.current?.value;
 
+        if (!enteredId || !enteredPassword) return;
 
-    const handlePass = () => {
-        const value = passRef.current.value
-        // const IdList = studentData.map((i) => i.id)
-        // const passList = facultyData.map((i) => i.pass)
-    }
-    const handleFlag = () => {
-
-        const enteredId = idRef.current.value
-        const enteredPassword = passRef.current.value
-
-
-        if(radioData === 'student'){
-           const userData = studentData.filter((i) => i.id === enteredId)
-           console.log(userData)
-
-
-
+        if (selectedRole === 'student') {
+            const userData = studentData.find((i) => i.id === enteredId);
+            setFlag({ flagStudent: userData?.pass === enteredPassword, flagFaculty: false });
+        } else if (selectedRole === 'faculty') {
+            const userData = facultyData.find((i) => i.id === enteredId);
+            setFlag({ flagStudent: false, flagFaculty: userData?.pass === enteredPassword });
         }
-        else if(radioData==='faculty') {
-            const userData = facultyData.filter((i) => i.id === enteredId)
-            console.log(userData)
-        }
-
-
-       // const enteredPassword = passRef.current.value
-
-     
-
-
-      
-    }
+    };
 
     const handleRadioBtn = (e) => {
-        setRadioData(e.target.value)
-    }
-
-    ///console.log(radioData, flag)
-
+        const selectedRole = e.target.value;
+        setRadioData(selectedRole);
+        handleFlag(selectedRole);
+    };
 
     return (
         <div className={styles.box}>
-
-            <div>
-                <Nav />
-            </div>
+            <Nav />
 
             <div className={styles.container}>
-
                 <Form className={styles.form} noValidate validated={validated} onSubmit={handleSubmit}>
                     <div>
                         <Form.Label><b>User Id</b></Form.Label>
-                        <Form.Control className={styles.input} ref={idRef} placeholder="Enter UserId"
+                        <Form.Control
+                            className={styles.input}
+                            ref={idRef}
+                            placeholder="Enter User ID"
                             required
-                            type="text" onInput={handleId}
+                            type="text"
+                            onChange={() => handleFlag(radioData)}
                         />
                         <Form.Label><b>Password</b></Form.Label>
-                        <Form.Control className={styles.input} ref={passRef} placeholder="Enter UserId"
+                        <Form.Control
+                            className={styles.input}
+                            ref={passRef}
+                            placeholder="Enter Password"
                             required
-                            type="password" onChange={handlePass}
+                            type="password"
+                            onChange={() => handleFlag(radioData)}
                         />
                     </div>
 
                     <div className={styles.radio}>
                         <div className='d-flex align-items-center gap-2'>
-                            <Form.Check name='check' 
+                            <Form.Check
+                                name="userType"
                                 required
-                                type="radio" value='student' onChange={handleRadioBtn}
+                                type="radio"
+                                value="student"
+                                onChange={handleRadioBtn}
                             />
-                            <Form.Label>student</Form.Label>
-
+                            <Form.Label>Student</Form.Label>
                         </div>
 
                         <div className='d-flex align-items-center gap-2'>
-
-                            <Form.Check name='check' 
-                                required 
-                                type="radio" value='faculty' onChange={handleRadioBtn}
+                            <Form.Check
+                                name="userType"
+                                required
+                                type="radio"
+                                value="faculty"
+                                onChange={handleRadioBtn}
                             />
-                            <Form.Label>faculty</Form.Label>
+                            <Form.Label>Faculty</Form.Label>
                         </div>
                     </div>
+
                     <div>
-                        <Button type="submit" variant="warning" onClick={(e) => handleSubmit(e)}>Login</Button>
+                        <Button type="submit" variant="warning">Login</Button>
                     </div>
                 </Form>
             </div>
         </div>
-
-    )
+    );
 }
-export default Login
 
-
-
-
+export default Login;
