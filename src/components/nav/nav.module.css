@@ -1,0 +1,22 @@
+
+    .nav {
+        display: flex;
+        gap: 15px; /* Space between links */
+        justify-content: right; /* Center them */
+        margin-top: 20px; /* Add spacing */
+      }
+      
+      .nav a {
+        text-decoration: none; /* Remove underline */
+        color: white; /* Text color */
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent button */
+        transition: background 0.3s;
+      }
+      
+      .nav a:hover {
+        background: rgba(255, 255, 255, 0.4); /* Hover effect */
+      }
+      
