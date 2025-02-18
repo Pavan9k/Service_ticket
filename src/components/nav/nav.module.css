@@ -1,22 +1,33 @@
+.navBar {
+  display: flex;
+  justify-content: space-between; /* LOGO on left, Links on right */
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(to right, #4a90e2, #9013fe); /* Gradient background */
+  color: white;
+}
 
-    .nav {
-        display: flex;
-        gap: 15px; /* Space between links */
-        justify-content: right; /* Center them */
-        margin-top: 20px; /* Add spacing */
-      }
-      
-      .nav a {
-        text-decoration: none; /* Remove underline */
-        color: white; /* Text color */
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.2); /* Semi-transparent button */
-        transition: background 0.3s;
-      }
-      
-      .nav a:hover {
-        background: rgba(255, 255, 255, 0.4); /* Hover effect */
-      }
-      
+.logo {
+  font-size: 36px;
+  font-weight: bold;
+  float: left;
+}
+
+.navLinks a {
+  margin: 8px;
+  text-decoration: none;
+  /* Remove underline */
+  color: white;
+  /* Text color */
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  /* Semi-transparent button */
+  /* transition: background 0.3s; */
+}
+
+.navLinks a:hover {
+  background: rgba(255, 255, 255, 0.4);
+  /* Hover effect */
+}
