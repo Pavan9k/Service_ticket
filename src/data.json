@@ -1,0 +1,12 @@
+{
+        "Student": [
+            {"id":"1234", "name":4,"pass":"1234"},
+            {"id":"Maxima", "name":4,"pass":"1234"},
+            {"id":"Skyline", "name":2,"pass":"1234"}
+        ],
+        "Faculty": [
+            {"id":"1234", "name":4,"pass":"1234"},
+            {"id":"Maxima", "name":4,"pass":"1234"}
+        ]
+    
+}
