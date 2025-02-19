@@ -1,0 +1,75 @@
+/* General Layout */
+.dashboard {
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #222;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+}
+
+.collapsed {
+    width: 60px;
+}
+
+/* Sidebar Button */
+.toggleButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+    align-self: flex-start;
+}
+
+/* Hide content when collapsed */
+.collapsed .sidebarContent {
+    display: none;
+}
+
+/* Sidebar Content */
+.sidebarContent {
+    padding: 10px;
+}
+
+/* Sidebar List */
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.sidebar ul li:hover {
+    background-color: #444;
+}
+
+/* Main Content */
+.mainContent {
+    margin-left: 250px;
+    padding: 20px;
+    flex-grow: 1;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.collapsed + .mainContent {
+    margin-left: 60px;
+}
+
+.underLine{
+    text-decoration: none;
+    color: white;
+}

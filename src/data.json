@@ -1,12 +1,57 @@
 {
-        "Student": [
-            {"id":"111", "name":4,"pass":"111"},
-            {"id":"222", "name":4,"pass":"222"},
-            {"id":"333", "name":2,"pass":"333"}
-        ],
-        "Faculty": [
-            {"id":"444", "name":4,"pass":"444"},
-            {"id":"555", "name":4,"pass":"555"}
-        ]
-    
+  "Student": [
+    {
+      "id": "111",
+      "name": "pavan",
+      "pass": "111",
+      "tickets": [
+        {
+          "ticketId": "1739964135848",
+          "ticket": "Fee structre change as to be done",
+          "ticketStatus": "open"
+        }
+      ]
+    },
+    {
+      "id": "222",
+      "name": "kumar",
+      "pass": "222",
+      "tickets": [
+        {
+          "ticketId": "2",
+          "ticket": "asdasd",
+          "ticketStatus": "closed"
+        }
+      ]
+    },
+    {
+      "id": "333",
+      "name": "naveen",
+      "pass": "333",
+      "tickets": [
+        {
+          "ticketId": "3",
+          "ticket": "asdasd",
+          "ticketStatus": "closed"
+        }
+      ]
+    }
+  ],
+  "Faculty": [
+    {
+      "id": "444",
+      "name": 4,
+      "pass": "444"
+    },
+    {
+      "id": "555",
+      "name": 4,
+      "pass": "555"
+    },
+    {
+      "id": "111",
+      "name": "5464",
+      "pass": "111"
+    }
+  ]
 }

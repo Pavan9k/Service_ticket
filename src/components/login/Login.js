@@ -11,11 +11,11 @@ function Login() {
     const [studentData, setStudentData] = useState([]);
     const [facultyData, setFacultyData] = useState([]);
     const [radioData, setRadioData] = useState('');
-    const [flag, setFlag] = useState({ flagStudent: false, flagFaculty: false });
     const [validated, setValidated] = useState(false);
+    const [loggingIn, setLoggingIn] = useState(false);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
-
     const idRef = useRef(null);
     const passRef = useRef(null);
 
@@ -27,6 +27,7 @@ function Login() {
                 const facultyResponse = await axios.get('http://localhost:8000/Faculty');
                 setFacultyData(facultyResponse.data);
             } catch (error) {
+                setError('Error fetching data. Please try again.');
                 console.error('Error fetching data:', error);
             }
         };
@@ -40,42 +41,36 @@ function Login() {
         if (!form.checkValidity()) {
             event.stopPropagation();
         } else {
-            if (flag.flagStudent) {
-                navigate('/student');
-            } else if (flag.flagFaculty) {
-                navigate('/faculty');
+            setLoggingIn(true);
+            setError('');
+
+            const enteredId = idRef.current?.value;
+            const enteredPassword = passRef.current?.value;
+
+            let user = null;
+            if (radioData === 'student') {
+                user = studentData.find((i) => i.id === enteredId && i.pass === enteredPassword);
+            } else if (radioData === 'faculty') {
+                user = facultyData.find((i) => i.id === enteredId && i.pass === enteredPassword);
+            }
+
+            if (user) {
+                localStorage.setItem('studentUser', JSON.stringify(user)); // Store user data
+                setTimeout(() => {
+                    navigate(radioData === 'student' ? '/student' : '/faculty');
+                }, 1000);
             } else {
-                alert('Invalid credentials');
+                setLoggingIn(false);
+                setError('Invalid credentials. Please try again.');
             }
         }
+
         setValidated(true);
-    };
-
-    const handleFlag = (selectedRole) => {
-        const enteredId = idRef.current?.value;
-        const enteredPassword = passRef.current?.value;
-
-        if (!enteredId || !enteredPassword) return;
-
-        if (selectedRole === 'student') {
-            const userData = studentData.find((i) => i.id === enteredId);
-            setFlag({ flagStudent: userData?.pass === enteredPassword, flagFaculty: false });
-        } else if (selectedRole === 'faculty') {
-            const userData = facultyData.find((i) => i.id === enteredId);
-            setFlag({ flagStudent: false, flagFaculty: userData?.pass === enteredPassword });
-        }
-    };
-
-    const handleRadioBtn = (e) => {
-        const selectedRole = e.target.value;
-        setRadioData(selectedRole);
-        handleFlag(selectedRole);
     };
 
     return (
         <div className={styles.box}>
             <Nav />
-
             <div className={styles.container}>
                 <Form className={styles.form} noValidate validated={validated} onSubmit={handleSubmit}>
                     <div>
@@ -86,7 +81,6 @@ function Login() {
                             placeholder="Enter User ID"
                             required
                             type="text"
-                            onChange={() => handleFlag(radioData)}
                         />
                         <Form.Label><b>Password</b></Form.Label>
                         <Form.Control
@@ -95,7 +89,6 @@ function Login() {
                             placeholder="Enter Password"
                             required
                             type="password"
-                            onChange={() => handleFlag(radioData)}
                         />
                     </div>
 
@@ -106,7 +99,7 @@ function Login() {
                                 required
                                 type="radio"
                                 value="student"
-                                onChange={handleRadioBtn}
+                                onChange={(e) => setRadioData(e.target.value)}
                             />
                             <Form.Label>Student</Form.Label>
                         </div>
@@ -117,14 +110,19 @@ function Login() {
                                 required
                                 type="radio"
                                 value="faculty"
-                                onChange={handleRadioBtn}
+                                onChange={(e) => setRadioData(e.target.value)}
                             />
                             <Form.Label>Faculty</Form.Label>
                         </div>
                     </div>
 
+                    {/* Error Message Display */}
+                    {error && <p className="text-danger">{error}</p>}
+
                     <div>
-                        <Button type="submit" variant="warning">Login</Button>
+                        <Button type="submit" variant="success" disabled={loggingIn}>
+                            {loggingIn ? 'Logging in...' : 'Login'}
+                        </Button>
                     </div>
                 </Form>
             </div>

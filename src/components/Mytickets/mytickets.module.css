@@ -1,0 +1,54 @@
+/* Container styling */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Table styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Ticket status styling */
+.closed {
+    color: red;
+    font-weight: bold;
+}
+
+.open {
+    color: green;
+    font-weight: bold;
+}
+
+/* Button styling */
+button {
+    margin-top: 20px;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 10px; /* Adjust spacing between buttons */
+}
+
+.buttonSpacing {
+    width: 10px; /* Space between buttons */
+}
+
