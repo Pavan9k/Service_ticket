@@ -1,9 +1,15 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-    const user = JSON.parse(localStorage.getItem('studentUser'));
+    const studentUser = localStorage.getItem("studentUser");
+    const facultyUser = localStorage.getItem("facultyUser");
 
-    return user ? children : <Navigate to="/" replace />;
+    if (!studentUser && !facultyUser) {
+        console.log("No user found! Redirecting to login.");
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
 };
 
 export default ProtectedRoute;

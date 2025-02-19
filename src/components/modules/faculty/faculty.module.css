@@ -1,0 +1,51 @@
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f4f4f4;
+}
+
+.statusOpen {
+    color: green;
+    font-weight: bold;
+}
+
+.statusInProgress {
+    color: orange;
+    font-weight: bold;
+}
+
+.statusClosed {
+    color: red;
+    font-weight: bold;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    margin: 5px;
+}

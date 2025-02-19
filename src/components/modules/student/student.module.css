@@ -46,6 +46,8 @@
 .sidebar ul {
     list-style-type: none;
     padding: 0;
+    background-color: #444;
+
 }
 
 .sidebar ul li {
@@ -53,9 +55,6 @@
     cursor: pointer;
 }
 
-.sidebar ul li:hover {
-    background-color: #444;
-}
 
 /* Main Content */
 .mainContent {

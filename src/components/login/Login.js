@@ -1,17 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import styles from './login.module.css';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from '../nav/Nav';
+import styles from './login.module.css';
 
 function Login() {
     const [studentData, setStudentData] = useState([]);
     const [facultyData, setFacultyData] = useState([]);
     const [radioData, setRadioData] = useState('');
-    const [validated, setValidated] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [loggingIn, setLoggingIn] = useState(false);
     const [error, setError] = useState('');
 
@@ -22,13 +22,18 @@ function Login() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const studentResponse = await axios.get('http://localhost:8000/Student');
-                setStudentData(studentResponse.data);
-                const facultyResponse = await axios.get('http://localhost:8000/Faculty');
-                setFacultyData(facultyResponse.data);
+                const [studentResponse, facultyResponse] = await Promise.all([
+                    axios.get('http://localhost:8000/Student'),
+                    axios.get('http://localhost:8000/Faculty')
+                ]);
+                setStudentData(studentResponse.data || []);
+                setFacultyData(facultyResponse.data || []);
+                console.log("Faculty Data:", facultyResponse.data); // Debugging log
             } catch (error) {
                 setError('Error fetching data. Please try again.');
                 console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchData();
@@ -36,95 +41,106 @@ function Login() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const form = event.currentTarget;
 
-        if (!form.checkValidity()) {
-            event.stopPropagation();
-        } else {
-            setLoggingIn(true);
-            setError('');
+        const enteredId = idRef.current?.value.trim();
+        const enteredPassword = passRef.current?.value.trim();
 
-            const enteredId = idRef.current?.value;
-            const enteredPassword = passRef.current?.value;
-
-            let user = null;
-            if (radioData === 'student') {
-                user = studentData.find((i) => i.id === enteredId && i.pass === enteredPassword);
-            } else if (radioData === 'faculty') {
-                user = facultyData.find((i) => i.id === enteredId && i.pass === enteredPassword);
-            }
-
-            if (user) {
-                localStorage.setItem('studentUser', JSON.stringify(user)); // Store user data
-                setTimeout(() => {
-                    navigate(radioData === 'student' ? '/student' : '/faculty');
-                }, 1000);
-            } else {
-                setLoggingIn(false);
-                setError('Invalid credentials. Please try again.');
-            }
+        if (!enteredId || !enteredPassword || !radioData) {
+            setError('All fields are required.');
+            return;
         }
 
-        setValidated(true);
+        setLoggingIn(true);
+        setError('');
+        localStorage.clear(); // Ensuring fresh login session
+
+        let user = null;
+        if (radioData === 'student') {
+            user = studentData.find((i) => String(i.id) === String(enteredId) && String(i.pass) === String(enteredPassword));
+            if (user) localStorage.setItem('studentUser', JSON.stringify(user));
+        } else if (radioData === 'faculty') {
+            console.log("Checking Faculty Data:", facultyData); // Debugging
+            user = facultyData.find((i) => String(i.id) === String(enteredId) && String(i.pass) === String(enteredPassword));
+            console.log("User found:", user); // Debugging
+            if (user) localStorage.setItem('facultyUser', JSON.stringify(user));
+        }
+
+        if (user) {
+            console.log("User authenticated:", user);
+            console.log("Local Storage:", localStorage.getItem('facultyUser'));
+            setTimeout(() => navigate(radioData === 'student' ? '/student' : '/faculty'), 1000);
+        } else {
+            console.log("Login failed!");
+            setLoggingIn(false);
+            setError('Invalid credentials. Please try again.');
+        }
     };
 
     return (
         <div className={styles.box}>
             <Nav />
             <div className={styles.container}>
-                <Form className={styles.form} noValidate validated={validated} onSubmit={handleSubmit}>
-                    <div>
-                        <Form.Label><b>User Id</b></Form.Label>
-                        <Form.Control
-                            className={styles.input}
-                            ref={idRef}
-                            placeholder="Enter User ID"
-                            required
-                            type="text"
-                        />
-                        <Form.Label><b>Password</b></Form.Label>
-                        <Form.Control
-                            className={styles.input}
-                            ref={passRef}
-                            placeholder="Enter Password"
-                            required
-                            type="password"
-                        />
-                    </div>
-
-                    <div className={styles.radio}>
-                        <div className='d-flex align-items-center gap-2'>
-                            <Form.Check
-                                name="userType"
+                {loading ? (
+                    <p className="text-center">Loading data...</p>
+                ) : (
+                    <Form className={styles.form} noValidate onSubmit={handleSubmit}>
+                        <div>
+                            <Form.Label><b>User Id</b></Form.Label>
+                            <Form.Control
+                                className={styles.input}
+                                ref={idRef}
+                                placeholder="Enter User ID"
                                 required
-                                type="radio"
-                                value="student"
-                                onChange={(e) => setRadioData(e.target.value)}
+                                type="text"
+                                disabled={loggingIn}
                             />
-                            <Form.Label>Student</Form.Label>
+                            <Form.Label><b>Password</b></Form.Label>
+                            <Form.Control
+                                className={styles.input}
+                                ref={passRef}
+                                placeholder="Enter Password"
+                                required
+                                type="password"
+                                disabled={loggingIn}
+                            />
                         </div>
 
-                        <div className='d-flex align-items-center gap-2'>
-                            <Form.Check
-                                name="userType"
-                                required
-                                type="radio"
-                                value="faculty"
-                                onChange={(e) => setRadioData(e.target.value)}
-                            />
-                            <Form.Label>Faculty</Form.Label>
+                        <div className={styles.radio}>
+                            <div className="d-flex align-items-center gap-2">
+                                <Form.Check
+                                    name="userType"
+                                    type="radio"
+                                    value="student"
+                                    checked={radioData === 'student'}
+                                    onChange={(e) => setRadioData(e.target.value)}
+                                    disabled={loggingIn}
+                                />
+                                <Form.Label>Student</Form.Label>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2">
+                                <Form.Check
+                                    name="userType"
+                                    type="radio"
+                                    value="faculty"
+                                    checked={radioData === 'faculty'}
+                                    onChange={(e) => setRadioData(e.target.value)}
+                                    disabled={loggingIn}
+                                />
+                                <Form.Label>Faculty</Form.Label>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Error Message Display */}
-                    {error && <p className="text-danger">{error}</p>}
+                        {/* Error Message Display */}
+                        {error && <p className="text-danger mt-2 text-center">{error}</p>}
 
-                    <div>
-                        <Button type="submit" variant="success" disabled={loggingIn}>
-                            {loggingIn ? 'Logging in...' : 'Login'}
-                        </Button>
-                    </div>
-                </Form>
+                        <div className="text-center">
+                            <Button type="submit" variant="success" disabled={loggingIn}>
+                                {loggingIn ? 'Logging in...' : 'Login'}
+                            </Button>
+                        </div>
+                    </Form>
+                )}
             </div>
         </div>
     );

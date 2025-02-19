@@ -16,6 +16,7 @@ function Signup() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    const [tickets,setTickets] = useState([])
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
@@ -51,7 +52,7 @@ function Signup() {
             }
 
             // Save new user
-            const newUser = { name, id, pass };
+            const newUser = { name, id, pass,tickets };
             await axios.post(apiEndpoint, newUser);
             
             setSuccess('Signup successful! Redirecting...');
