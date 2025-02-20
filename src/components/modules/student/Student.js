@@ -6,15 +6,13 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 
 function Student() {
     const navigate = useNavigate();
-    const [studentName, setStudentName] = useState('');
+    const [student, setStudent] = useState(null);
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const storedUser = JSON.parse(localStorage.getItem('studentUser'));
-
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('studentUser'));
         if (storedUser) {
-            setStudentName(storedUser.name);
+            setStudent(storedUser);
         } else {
             navigate('/'); // Redirect if not logged in
         }
@@ -22,7 +20,7 @@ function Student() {
 
     const handleLogout = () => {
         localStorage.removeItem('studentUser');
-        navigate('/')
+        navigate('/');
     };
 
     return (
@@ -34,17 +32,20 @@ function Student() {
                 </button>
 
                 <div className={styles.sidebarContent}>
-                    {!isCollapsed && <h2>Welcome, {studentName}</h2>}
-
-                    <ul>
-                        {/* <li>Dashboard</li> */}
-                        <li ><Link className={styles.underLine} to="/my-tickets">My Tickets</Link></li>
-                    </ul>
-
-                    {!isCollapsed && (
-                        <Button variant="danger" onClick={handleLogout}>
-                            Logout
-                        </Button>
+                    {!isCollapsed && student && (
+                        <>
+                            <h2>Welcome, {student.name}</h2>
+                            <ul>
+                                <li>
+                                    <Link className={styles.underLine} to="/my-tickets">
+                                        My Tickets
+                                    </Link>
+                                </li>
+                            </ul>
+                            <Button variant="danger" onClick={handleLogout}>
+                                Logout
+                            </Button>
+                        </>
                     )}
                 </div>
             </aside>
@@ -52,9 +53,12 @@ function Student() {
             {/* Main Content */}
             <main className={styles.mainContent}>
                 <h1>Student Dashboard</h1>
-
-                <p>Student Id : {storedUser.id}</p>
-                <p>Student Name: {storedUser.name}</p>
+                {student && (
+                    <>
+                        <p>Student Id : {student.id}</p>
+                        <p>Student Name: {student.name}</p>
+                    </>
+                )}
             </main>
         </div>
     );

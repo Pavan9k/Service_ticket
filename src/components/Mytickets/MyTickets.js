@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './mytickets.module.css';
 import Button from 'react-bootstrap/Button';
@@ -12,6 +12,16 @@ function MyTickets() {
     const [student, setStudent] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [ticketDescription, setTicketDescription] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [ticketCategory, setTicketCategory] = useState("Management"); // New state for category
+
+    const [selectedTicket, setSelectedTicket] = useState(null);
+
+    const [imageModal, setImageModal] = useState({
+        isVisible: false,
+        src: null
+    });
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('studentUser'));
@@ -23,22 +33,38 @@ function MyTickets() {
         }
     }, [navigate]);
 
-    const fetchTickets = async (studentId) => {
+    const fetchTickets = useCallback(async (studentId) => {
         try {
             const response = await axios.get(`http://localhost:8000/Student/${studentId}`);
             setTickets(response.data.tickets || []);
         } catch (error) {
             console.error("Error fetching tickets:", error);
         }
+    }, []);
+
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
     };
 
-    const handleSubmitTicket = async () => {
+    const handleSubmitTicket = useCallback(async () => {
         if (!ticketDescription.trim()) return;
+
+        let imageName = null;
+
+        if (selectedImage) {
+            imageName = selectedImage.name;
+        }
 
         const newTicket = {
             ticketId: Date.now().toString(),
             ticket: ticketDescription,
-            ticketStatus: 'open'
+            ticketStatus: 'open',
+            imageName: imageName,
+            category: ticketCategory // Include category
         };
 
         try {
@@ -52,9 +78,38 @@ function MyTickets() {
             setTickets(updatedStudent.tickets);
             setShowModal(false);
             setTicketDescription("");
+            setSelectedImage(null);
+            setImagePreview(null);
+            setTicketCategory("Management");
         } catch (error) {
             console.error("Error updating tickets:", error);
         }
+    }, [ticketDescription, selectedImage, student, ticketCategory]);
+
+    const getImageSrc = (imageName) => {
+        return `${process.env.PUBLIC_URL}/images/${imageName}`;
+    };
+
+    const handleImageClick = useCallback((imageSrc) => {
+        setImageModal({
+            isVisible: true,
+            src: imageSrc
+        });
+    }, []);
+
+    const handleCloseImageModal = useCallback(() => {
+        setImageModal({
+            isVisible: false,
+            src: null
+        });
+    }, []);
+
+    const handleTicketClick = (ticket) => {
+        setSelectedTicket(ticket);
+    };
+
+    const handleCloseDetailsModal = () => {
+        setSelectedTicket(null);
     };
 
     return (
@@ -68,15 +123,49 @@ function MyTickets() {
                         <tr>
                             <th>Ticket ID</th>
                             <th>Description</th>
+                            <th>Category</th>
+                            <th>Image</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {tickets.map((ticket) => (
-                            <tr key={ticket.ticketId}>
+                            <tr 
+                                key={ticket.ticketId} 
+                                onClick={() => handleTicketClick(ticket)}
+                                className={styles.ticketRow}
+                            >
                                 <td>{ticket.ticketId}</td>
                                 <td>{ticket.ticket}</td>
-                                <td className={ticket.ticketStatus === 'closed' ? styles.closed : styles.open}>
+                                <td>{ticket.category}</td>
+                                <td>
+                                    {ticket.imageName ? (
+                                        <img 
+                                            src={getImageSrc(ticket.imageName)} 
+                                            alt={`Ticket ${ticket.ticketId}`} 
+                                            className={styles.ticketImage}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleImageClick(getImageSrc(ticket.imageName));
+                                            }}
+                                            onError={(e) => { 
+                                                e.target.onerror = null; 
+                                                e.target.src = `${process.env.PUBLIC_URL}/images/default.png`; 
+                                            }}
+                                            tabIndex={0}
+                                            role="button"
+                                        />
+                                    ) : (
+                                        "No Image"
+                                    )}
+                                </td>
+                                <td className={
+                                    ticket.ticketStatus === 'closed' 
+                                    ? styles.closed 
+                                    : ticket.ticketStatus === 'in-progress' 
+                                    ? styles.inProgress 
+                                    : styles.open
+                                }>
                                     {ticket.ticketStatus}
                                 </td>
                             </tr>
@@ -91,30 +180,47 @@ function MyTickets() {
                 <Button variant="success" onClick={() => setShowModal(true)}>
                     Create New Ticket
                 </Button>
-                <span className={styles.buttonSpacing} /> {/* Added space */}
+                <span className={styles.buttonSpacing} />
                 <Button variant="primary" onClick={() => navigate('/student')}>
                     Back to Dashboard
                 </Button>
             </div>
 
-            {/* Modal for Creating Tickets */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            {/* Create Ticket Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered animation={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create New Ticket</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
-                        <Form.Group>
-                            <Form.Label>Ticket Description</Form.Label>
-                            <Form.Control 
-                                as="textarea" // Changed to textarea
-                                rows={3} 
-                                placeholder="Enter ticket details" 
-                                value={ticketDescription} 
-                                onChange={(e) => setTicketDescription(e.target.value)} 
-                            />
-                        </Form.Group>
-                    </Form>
+                    <Form.Group className="mb-3" controlId="ticketDescription">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control 
+                            as="textarea" 
+                            rows={3} 
+                            value={ticketDescription} 
+                            onChange={(e) => setTicketDescription(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="ticketCategory">
+                        <Form.Label>Category</Form.Label>
+                        <Form.Select 
+                            value={ticketCategory} 
+                            onChange={(e) => setTicketCategory(e.target.value)}
+                        >
+                            <option value="Management">Management</option>
+                            <option value="IT">IT</option>
+                            <option value="Cleaning">Cleaning</option>
+                        </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="ticketImage">
+                        <Form.Label>Attach Image (Optional)</Form.Label>
+                        <Form.Control type="file" onChange={handleImageChange} />
+                        {imagePreview && (
+                            <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
+                        )}
+                    </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>

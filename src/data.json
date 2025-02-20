@@ -6,15 +6,11 @@
       "pass": "111",
       "tickets": [
         {
-          "ticketId": "1739964135848",
-          "ticket": "Fee structre change as to be done",
-          "ticketStatus": "closed"
-        },
-        {
-          "ticketId": "1739967068142",
-          "ticket": "asda",
-          "ticketStatus": "in-progress",
-          "ticketImage": "blob:http://localhost:3000/eda5b7ac-c978-48ce-8f17-bd211b58f955"
+          "ticketId": "1740050789475",
+          "ticket": "121212121",
+          "ticketStatus": "closed",
+          "imageName": "2.jpg",
+          "category": "Cleaning"
         }
       ]
     },
@@ -22,25 +18,13 @@
       "id": "222",
       "name": "kumar",
       "pass": "222",
-      "tickets": [
-        {
-          "ticketId": "2",
-          "ticket": "asdasd",
-          "ticketStatus": "closed"
-        }
-      ]
+      "tickets": []
     },
     {
       "id": "333",
       "name": "naveen",
       "pass": "333",
-      "tickets": [
-        {
-          "ticketId": "3",
-          "ticket": "asdasd",
-          "ticketStatus": "in-progress"
-        }
-      ]
+      "tickets": []
     }
   ],
   "Faculty": [

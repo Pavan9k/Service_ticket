@@ -24,7 +24,8 @@ function Login() {
             try {
                 const [studentResponse, facultyResponse] = await Promise.all([
                     axios.get('http://localhost:8000/Student'),
-                    axios.get('http://localhost:8000/Faculty')
+                    axios.get('http://localhost:8000/Faculty'),
+
                 ]);
                 setStudentData(studentResponse.data || []);
                 setFacultyData(facultyResponse.data || []);
