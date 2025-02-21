@@ -4,15 +4,7 @@
       "id": "111",
       "name": "pavan",
       "pass": "111",
-      "tickets": [
-        {
-          "ticketId": "1740050789475",
-          "ticket": "121212121",
-          "ticketStatus": "closed",
-          "imageName": "2.jpg",
-          "category": "Cleaning"
-        }
-      ]
+      "role": "Student"
     },
     {
       "id": "222",

@@ -5,6 +5,7 @@ import Login from "./components/login/Login";
 import ProtectedRoute from './components/ProtectedRoute';
 import MyTickets from "./components/Mytickets/MyTickets";
 import Faculty from "./components/modules/faculty/Faculty";
+import Admin from "./components/modules/admin/Admin";
 
 
 
@@ -16,12 +17,15 @@ function App() {
       {/* <Main /> */}
       <Routes>
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/admin/*" element={<Admin />} />
 
         <Route path="/" element={<Login />} />
         <Route path="/student" element={<ProtectedRoute><Student /></ProtectedRoute>} />
         <Route path="/faculty" element={<ProtectedRoute><Faculty /></ProtectedRoute>} />
         <Route path="/my-tickets" element={<MyTickets />} />
+        <Route path="*" element={<h1>Page not found</h1>} />
       </Routes>
+
 
     </div>
   );
