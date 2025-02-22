@@ -52,29 +52,30 @@ function MyTickets() {
 
     const handleSubmitTicket = useCallback(async () => {
         if (!ticketDescription.trim()) return;
-
+    
         let imageName = null;
-
+    
         if (selectedImage) {
             imageName = selectedImage.name;
         }
-
+    
         const newTicket = {
             ticketId: Date.now().toString(),
             ticket: ticketDescription,
             ticketStatus: 'open',
             imageName: imageName,
-            category: ticketCategory // Include category
+            category: ticketCategory,
+            dateSubmitted: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
         };
-
+    
         try {
             const response = await axios.get(`http://localhost:8000/Student/${student.id}`);
             const updatedStudent = { ...response.data };
-
+    
             updatedStudent.tickets = [...(updatedStudent.tickets || []), newTicket];
-
+    
             await axios.put(`http://localhost:8000/Student/${student.id}`, updatedStudent);
-
+    
             setTickets(updatedStudent.tickets);
             setShowModal(false);
             setTicketDescription("");
@@ -85,7 +86,7 @@ function MyTickets() {
             console.error("Error updating tickets:", error);
         }
     }, [ticketDescription, selectedImage, student, ticketCategory]);
-
+        
     const getImageSrc = (imageName) => {
         return `${process.env.PUBLIC_URL}/images/${imageName}`;
     };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../admin.module.css';
+import styles from './usermanagement.module.css';
 
 function UserManagement() {
     const [users, setUsers] = useState([]);
@@ -93,7 +93,7 @@ function UserManagement() {
 
     return (
         <div className={styles.section}>
-            <h3>User Management</h3>
+            <h3>Manage Users</h3>
             <input
                 type="text"
                 placeholder="Search users..."

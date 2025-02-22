@@ -1,11 +1,9 @@
-// Path: D:/React/Service/ticket/src/components/modules/admin/Admin.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavLink, Route, Routes } from 'react-router-dom';
 import Analytics from './components/Analytics';
 import UserManagement from './components/UserManagement';
 import TicketManagement from './components/TicketManagement';
-import Notifications from './components/Notifications';
 import styles from './admin.module.css';
 
 const API_BASE_URL = 'http://localhost:8000';
@@ -19,10 +17,13 @@ function Admin() {
         closed: 0,
         totalTickets: 0
     });
+    const [fromDate, setFromDate] = useState(null);
+    const [toDate, setToDate] = useState(null);
+    const [filteredTickets, setFilteredTickets] = useState([]);
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [fromDate, toDate]);
 
     const fetchUsers = async () => {
         try {
@@ -32,12 +33,24 @@ function Admin() {
             const facultyResponse = await axios.get(`${API_BASE_URL}/Faculty`);
             setFaculty(facultyResponse.data);
 
-            // Calculate Ticket Stats
-            const tickets = studentResponse.data.flatMap(student => student.tickets);
-            const open = tickets.filter(ticket => ticket.ticketStatus === 'open').length;
-            const inProgress = tickets.filter(ticket => ticket.ticketStatus === 'in-progress').length;
-            const closed = tickets.filter(ticket => ticket.ticketStatus === 'closed').length;
-            const totalTickets = tickets.length;
+            const tickets = studentResponse.data.flatMap(student => student.tickets || []);
+
+            let filtered = tickets;
+            if (fromDate || toDate) {
+                filtered = tickets.filter(ticket => {
+                    const ticketDate = new Date(ticket.dateSubmitted);
+                    const isAfterFromDate = fromDate ? ticketDate >= new Date(fromDate) : true;
+                    const isBeforeToDate = toDate ? ticketDate <= new Date(toDate) : true;
+                    return isAfterFromDate && isBeforeToDate;
+                });
+            }
+
+            setFilteredTickets(filtered);
+
+            const open = filtered.filter(ticket => ticket.ticketStatus === 'open').length;
+            const inProgress = filtered.filter(ticket => ticket.ticketStatus === 'in-progress').length;
+            const closed = filtered.filter(ticket => ticket.ticketStatus === 'closed').length;
+            const totalTickets = filtered.length;
 
             setTicketStats({ open, inProgress, closed, totalTickets });
         } catch (error) {
@@ -57,19 +70,27 @@ function Admin() {
                 <NavLink to="/admin/ticket-management" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                     Ticket Management
                 </NavLink>
-                <NavLink to="/admin/notifications" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                    Notifications
-                </NavLink>
+
             </div>
 
             <h2 className={styles.title}>Admin Dashboard</h2>
 
             <div className={styles.content}>
                 <Routes>
-                    <Route path="analytics" element={<Analytics ticketStats={ticketStats} students={students} faculty={faculty} />} />
+                    <Route
+                        path="analytics"
+                        element={
+                            <Analytics
+                                ticketStats={ticketStats}
+                                fromDate={fromDate}
+                                toDate={toDate}
+                                setFromDate={setFromDate}
+                                setToDate={setToDate}
+                            />
+                        }
+                    />
                     <Route path="user-management" element={<UserManagement />} />
                     <Route path="ticket-management" element={<TicketManagement />} />
-                    <Route path="notifications" element={<Notifications />} />
                 </Routes>
             </div>
         </div>

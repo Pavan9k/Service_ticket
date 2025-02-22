@@ -1,74 +1,62 @@
-/* General Layout */
-.dashboard {
-    display: flex;
-}
-
-/* Sidebar */
+/* student.module.css */
 .sidebar {
+    background-color: #3b3b3b; /* Darker gray for better contrast */
+    color: #322e2e; /* White text for good readability */
     width: 250px;
-    background-color: #222;
-    color: white;
-    height: 100vh;
+    transition: width 0.3s;
+    padding: 20px;
     position: fixed;
-    transition: width 0.3s ease-in-out;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    padding-top: 10px;
+    height: 100vh;
 }
 
 .collapsed {
-    width: 60px;
+    width: 80px;
 }
 
-/* Sidebar Button */
 .toggleButton {
     background: none;
     border: none;
-    color: white;
+    color: #fff;
     font-size: 24px;
     cursor: pointer;
-    margin: 10px;
-    align-self: flex-start;
+    margin-bottom: 20px;
 }
 
-/* Hide content when collapsed */
-.collapsed .sidebarContent {
-    display: none;
+.sidebarContent h2 {
+    color: #e0e0e0; 
+    font-weight: bold;
 }
 
-/* Sidebar Content */
-.sidebarContent {
-    padding: 10px;
-}
-
-/* Sidebar List */
-.sidebar ul {
-    list-style-type: none;
+.sidebarContent ul {
+    list-style: none;
     padding: 0;
-    background-color: #444;
-
 }
 
-.sidebar ul li {
+.sidebarContent ul li {
+    margin: 10px 0;
+}
+
+.underLine {
+    text-decoration: none;
+    color:#322e2e;
+    font-size: 18px;
+    display: block;
     padding: 10px;
-    cursor: pointer;
+    border-radius: 8px;
+    /* transition: background 0.3s; */
 }
 
+/* .underLine:hover {
+    background-color: #575757;
+    color: white;
+} */
 
-/* Main Content */
 .mainContent {
     margin-left: 250px;
     padding: 20px;
-    flex-grow: 1;
-    transition: margin-left 0.3s ease-in-out;
+    transition: margin-left 0.3s;
 }
 
 .collapsed + .mainContent {
-    margin-left: 60px;
-}
-
-.underLine{
-    text-decoration: none;
-    color: white;
+    margin-left: 80px;
 }

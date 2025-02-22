@@ -4,13 +4,56 @@
       "id": "111",
       "name": "pavan",
       "pass": "111",
-      "role": "Student"
+      "role": "Student",
+      "tickets": [
+        {
+          "ticketId": "1740205174290",
+          "ticket": "asda",
+          "ticketStatus": "closed",
+          "imageName": "1.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-02-20"
+        },
+        {
+          "ticketId": "1740206385526",
+          "ticket": "asasdasda",
+          "ticketStatus": "open",
+          "imageName": "3.jpg",
+          "category": "Cleaning",
+          "dateSubmitted": "2025-02-21"
+        }
+      ]
     },
     {
       "id": "222",
       "name": "kumar",
       "pass": "222",
-      "tickets": []
+      "tickets": [
+        {
+          "ticketId": "1740205413219",
+          "ticket": "ticket 2",
+          "ticketStatus": "In-progress",
+          "imageName": "2.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-02-19"
+        },
+        {
+          "ticketId": "1740208230646",
+          "ticket": "asdasdasdasdas",
+          "ticketStatus": "open",
+          "imageName": "3.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-02-22"
+        },
+        {
+          "ticketId": "1740208408238",
+          "ticket": "a",
+          "ticketStatus": "open",
+          "imageName": "1.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-02-22"
+        }
+      ]
     },
     {
       "id": "333",
@@ -22,17 +65,17 @@
   "Faculty": [
     {
       "id": "444",
-      "name": 4,
+      "name": "John",
       "pass": "444"
     },
     {
       "id": "555",
-      "name": 4,
+      "name": "Jane",
       "pass": "555"
     },
     {
       "id": "111",
-      "name": "5464",
+      "name": "Sam",
       "pass": "111"
     }
   ]
