@@ -62,7 +62,7 @@ function TicketManagement() {
         switch (status) {
             case 'open':
                 return '#FF6384'; // Red for Open
-            case 'In-progress':
+            case 'in-progress':
                 return '#FFCE56'; // Yellow for In Progress
             case 'closed':
                 return '#4BC0C0'; // Green for Closed
