@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -10,7 +10,8 @@ function TicketManagement() {
     const [sortConfig, setSortConfig] = useState({ key: 'ticketId', direction: 'ascending' });
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [sorting, setSorting] = useState(false); // Track sorting state
+    const [sorting, setSorting] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -28,27 +29,31 @@ function TicketManagement() {
         fetchTickets();
     }, []);
 
-    // Sorting Function
+    // Sorting Function with useMemo for performance optimization
+    useMemo(() => {
+        if (sortConfig.key) {
+            setSorting(true);
+            const sorted = [...sortedTickets].sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
+            setSortedTickets(sorted);
+            setSorting(false);
+        }
+    }, [sortConfig, tickets]);
+
+    // Sorting Handler
     const sortTickets = (key) => {
         let direction = 'ascending';
         if (sortConfig.key === key && sortConfig.direction === 'ascending') {
             direction = 'descending';
         }
         setSortConfig({ key, direction });
-        setSorting(true); // Set sorting state to true while sorting
-
-        const sorted = [...tickets].sort((a, b) => {
-            if (a[key] < b[key]) {
-                return direction === 'ascending' ? -1 : 1;
-            }
-            if (a[key] > b[key]) {
-                return direction === 'ascending' ? 1 : -1;
-            }
-            return 0;
-        });
-
-        setSortedTickets(sorted);
-        setSorting(false); // Set sorting state to false after sorting is done
     };
 
     const renderSortIcon = (column) => {
@@ -58,22 +63,44 @@ function TicketManagement() {
 
     // Function to map ticket status to background color
     const getStatusColor = (status) => {
-        console.log(status)
-        switch (status) {
+        switch (status.toLowerCase()) {
             case 'open':
-                return '#FF6384'; // Red for Open
+                return '#FF6384';
             case 'in-progress':
-                return '#FFCE56'; // Yellow for In Progress
+                return '#FFCE56';
             case 'closed':
-                return '#4BC0C0'; // Green for Closed
-           
+                return '#4BC0C0';
+            default:
+                return '#777';
         }
     };
-    
+
+    // Search Filter
+    const filteredTickets = useMemo(() => {
+        return sortedTickets.filter(ticket =>
+            ticket.ticketId.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [searchTerm, sortedTickets]);
+
+    // Date Formatter
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB'); // Format: dd-MM-yyyy
+    };
 
     return (
         <div className={styles.section}>
             <h3>Ticket Management</h3>
+
+            {/* Search Bar */}
+            <input 
+                type="text" 
+                placeholder="Search by Ticket ID..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchBar}
+            />
+
             {loading ? (
                 <p>Loading tickets...</p>
             ) : (
@@ -91,17 +118,20 @@ function TicketManagement() {
                                 <th onClick={() => sortTickets('ticketStatus')}>
                                     Status {renderSortIcon('ticketStatus')}
                                 </th>
+                                <th onClick={() => sortTickets('dateSubmitted')}>
+                                    Date Submitted {renderSortIcon('dateSubmitted')}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {sorting ? (
                                 <tr>
-                                    <td colSpan="4" style={{ textAlign: 'center', color: '#777' }}>
+                                    <td colSpan="5" style={{ textAlign: 'center', color: '#777' }}>
                                         Sorting tickets...
                                     </td>
                                 </tr>
-                            ) : sortedTickets.length > 0 ? (
-                                sortedTickets.map((ticket, index) => (
+                            ) : filteredTickets.length > 0 ? (
+                                filteredTickets.map((ticket, index) => (
                                     <tr key={index} onClick={() => setSelectedTicket(ticket)}>
                                         <td>{ticket.ticketId}</td>
                                         <td>{ticket.ticket}</td>
@@ -121,11 +151,12 @@ function TicketManagement() {
                                         >
                                             {ticket.ticketStatus}
                                         </td>
+                                        <td>{formatDate(ticket.dateSubmitted)}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="4" style={{ textAlign: 'center', padding: '10px', color: '#777' }}>
+                                    <td colSpan="5" style={{ textAlign: 'center', padding: '10px', color: '#777' }}>
                                         No tickets found.
                                     </td>
                                 </tr>
@@ -146,6 +177,7 @@ function TicketManagement() {
                             <p><strong>Ticket ID:</strong> {selectedTicket.ticketId}</p>
                             <p><strong>Description:</strong> {selectedTicket.ticket}</p>
                             <p><strong>Status:</strong> {selectedTicket.ticketStatus}</p>
+                            <p><strong>Date Submitted:</strong> {formatDate(selectedTicket.dateSubmitted)}</p>
                             {selectedTicket.imageName && (
                                 <img 
                                     src={`${process.env.PUBLIC_URL}/images/${selectedTicket.imageName}`} 
