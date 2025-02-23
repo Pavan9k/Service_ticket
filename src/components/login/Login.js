@@ -25,11 +25,9 @@ function Login() {
                 const [studentResponse, facultyResponse] = await Promise.all([
                     axios.get('http://localhost:8000/Student'),
                     axios.get('http://localhost:8000/Faculty'),
-
                 ]);
                 setStudentData(studentResponse.data || []);
                 setFacultyData(facultyResponse.data || []);
-                console.log("Faculty Data:", facultyResponse.data); // Debugging log
             } catch (error) {
                 setError('Error fetching data. Please try again.');
                 console.error('Error fetching data:', error);
@@ -57,23 +55,37 @@ function Login() {
 
         let user = null;
         if (radioData === 'student') {
-            user = studentData.find((i) => String(i.id) === String(enteredId) && String(i.pass) === String(enteredPassword));
-            if (user) localStorage.setItem('studentUser', JSON.stringify(user));
+            user = studentData.find((i) => 
+                String(i.id) === String(enteredId) && 
+                String(i.pass) === String(enteredPassword)
+            );
+            if (user) {
+                const authData = {
+                    id: user.id,
+                    name: user.name
+                };
+                localStorage.setItem('studentUser', JSON.stringify(authData));
+            }
         } else if (radioData === 'faculty') {
-            console.log("Checking Faculty Data:", facultyData); // Debugging
-            user = facultyData.find((i) => String(i.id) === String(enteredId) && String(i.pass) === String(enteredPassword));
-            console.log("User found:", user); // Debugging
-            if (user) localStorage.setItem('facultyUser', JSON.stringify(user));
+            user = facultyData.find((i) => 
+                String(i.id) === String(enteredId) && 
+                String(i.pass) === String(enteredPassword)
+            );
+            if (user) {
+                const authData = {
+                    id: user.id,
+                    name: user.name
+                };
+                localStorage.setItem('facultyUser', JSON.stringify(authData));
+            }
         }
 
         if (user) {
-            console.log("User authenticated:", user);
-            console.log("Local Storage:", localStorage.getItem('facultyUser'));
             setTimeout(() => navigate(radioData === 'student' ? '/student' : '/faculty'), 1000);
         } else {
-            console.log("Login failed!");
             setLoggingIn(false);
             setError('Invalid credentials. Please try again.');
+            passRef.current.value = ''; // Clear password field on failed attempt
         }
     };
 
@@ -94,6 +106,7 @@ function Login() {
                                 required
                                 type="text"
                                 disabled={loggingIn}
+                                autoComplete="off"
                             />
                             <Form.Label><b>Password</b></Form.Label>
                             <Form.Control
@@ -103,6 +116,7 @@ function Login() {
                                 required
                                 type="password"
                                 disabled={loggingIn}
+                                autoComplete="off"
                             />
                         </div>
 

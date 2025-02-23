@@ -15,6 +15,8 @@ function Faculty() {
     const [error, setError] = useState('');
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [feedback, setFeedback] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Management');
 
     useEffect(() => {
@@ -58,6 +60,37 @@ function Faculty() {
         } catch (error) {
             console.error('Error updating ticket status:', error);
             setError('Could not update ticket status. Try again.');
+        }
+    };
+
+    const handleFeedbackClick = (ticket) => {
+        setSelectedTicket(ticket);
+        setFeedback(ticket.feedback || ''); // Prefill if feedback exists
+        setShowFeedbackModal(true);
+    };
+
+    const handleFeedbackSubmit = async (ticketId, studentId) => {
+        try {
+            const { data: studentData } = await axios.get(`${API_BASE_URL}/${studentId}`);
+
+            const updatedTickets = studentData.tickets.map(ticket =>
+                ticket.ticketId === ticketId ? { ...ticket, feedback } : ticket
+            );
+
+            await axios.put(`${API_BASE_URL}/${studentId}`, { ...studentData, tickets: updatedTickets });
+
+            setTickets(prevTickets =>
+                prevTickets.map(ticket =>
+                    ticket.ticketId === ticketId ? { ...ticket, feedback } : ticket
+                )
+            );
+
+            setShowFeedbackModal(false);
+            setFeedback('');
+            alert('Feedback submitted successfully!');
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            setError('Could not submit feedback. Try again.');
         }
     };
 
@@ -111,8 +144,8 @@ function Faculty() {
                         <tr>
                             <th>Ticket ID</th>
                             <th>Description</th>
-                            <th>Image</th>
                             <th>Status</th>
+                            <th>Feedback</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,17 +153,6 @@ function Faculty() {
                             <tr key={ticket.ticketId} onClick={() => handleTicketClick(ticket)}>
                                 <td>{ticket.ticketId}</td>
                                 <td>{ticket.ticket}</td>
-                                <td>
-                                    {ticket.imageName ? (
-                                        <img 
-                                            src={`${process.env.PUBLIC_URL}/images/${ticket.imageName}`} 
-                                            alt="Ticket" 
-                                            className={styles.ticketImage}
-                                        />
-                                    ) : (
-                                        "No Image"
-                                    )}
-                                </td>
                                 <td>
                                     <Form.Select
                                         value={ticket.ticketStatus}
@@ -142,6 +164,11 @@ function Faculty() {
                                         <option value="closed">Closed</option>
                                     </Form.Select>
                                 </td>
+                                <td>
+                                    {ticket.ticketStatus === 'closed' && (
+                                        <Button onClick={() => handleFeedbackClick(ticket)}>Feedback</Button>
+                                    )}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -150,34 +177,31 @@ function Faculty() {
                 <p>No tickets available in this category.</p>
             )}
 
-            <Button variant="primary" onClick={() => navigate('/')}>Logout</Button>
-
-            {/* Modal for Viewing Ticket Details */}
-            <Modal show={showDetailsModal} onHide={handleCloseModal} centered animation={false}>
+            {/* Feedback Modal */}
+            <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Ticket Details</Modal.Title>
+                    <Modal.Title>Provide Feedback</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {selectedTicket && (
-                        <>
-                            <p><strong>Ticket ID:</strong> {selectedTicket.ticketId}</p>
-                            <p><strong>Description:</strong> {selectedTicket.ticket}</p>
-                            <p><strong>Status:</strong> {selectedTicket.ticketStatus}</p>
-                            {selectedTicket.imageName ? (
-                                <img 
-                                    src={`${process.env.PUBLIC_URL}/images/${selectedTicket.imageName}`} 
-                                    alt="Ticket" 
-                                    className={styles.fullImage}
-                                />
-                            ) : (
-                                <p><strong>Image:</strong> No Image Available</p>
-                            )}
-                        </>
-                    )}
+                    <Form.Group>
+                        <Form.Label>Feedback:</Form.Label>
+                        <Form.Control 
+                            as="textarea" 
+                            rows={4} 
+                            value={feedback} 
+                            onChange={(e) => setFeedback(e.target.value)} 
+                        />
+                    </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Close
+                    <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button 
+                        variant="primary" 
+                        onClick={() => handleFeedbackSubmit(selectedTicket.ticketId, selectedTicket.studentId)}
+                    >
+                        Submit
                     </Button>
                 </Modal.Footer>
             </Modal>

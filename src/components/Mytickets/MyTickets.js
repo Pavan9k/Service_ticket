@@ -14,7 +14,7 @@ function MyTickets() {
     const [ticketDescription, setTicketDescription] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const [ticketCategory, setTicketCategory] = useState("Management"); // New state for category
+    const [ticketCategory, setTicketCategory] = useState("Management");
 
     const [selectedTicket, setSelectedTicket] = useState(null);
 
@@ -52,30 +52,30 @@ function MyTickets() {
 
     const handleSubmitTicket = useCallback(async () => {
         if (!ticketDescription.trim()) return;
-    
+
         let imageName = null;
-    
+
         if (selectedImage) {
             imageName = selectedImage.name;
         }
-    
+
         const newTicket = {
             ticketId: Date.now().toString(),
             ticket: ticketDescription,
             ticketStatus: 'open',
             imageName: imageName,
             category: ticketCategory,
-            dateSubmitted: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+            dateSubmitted: new Date().toISOString().split('T')[0]
         };
-    
+
         try {
             const response = await axios.get(`http://localhost:8000/Student/${student.id}`);
             const updatedStudent = { ...response.data };
-    
+
             updatedStudent.tickets = [...(updatedStudent.tickets || []), newTicket];
-    
+
             await axios.put(`http://localhost:8000/Student/${student.id}`, updatedStudent);
-    
+
             setTickets(updatedStudent.tickets);
             setShowModal(false);
             setTicketDescription("");
@@ -86,7 +86,7 @@ function MyTickets() {
             console.error("Error updating tickets:", error);
         }
     }, [ticketDescription, selectedImage, student, ticketCategory]);
-        
+
     const getImageSrc = (imageName) => {
         return `${process.env.PUBLIC_URL}/images/${imageName}`;
     };
@@ -131,8 +131,8 @@ function MyTickets() {
                     </thead>
                     <tbody>
                         {tickets.map((ticket) => (
-                            <tr 
-                                key={ticket.ticketId} 
+                            <tr
+                                key={ticket.ticketId}
                                 onClick={() => handleTicketClick(ticket)}
                                 className={styles.ticketRow}
                             >
@@ -141,17 +141,17 @@ function MyTickets() {
                                 <td>{ticket.category}</td>
                                 <td>
                                     {ticket.imageName ? (
-                                        <img 
-                                            src={getImageSrc(ticket.imageName)} 
-                                            alt={`Ticket ${ticket.ticketId}`} 
+                                        <img
+                                            src={getImageSrc(ticket.imageName)}
+                                            alt={`Ticket ${ticket.ticketId}`}
                                             className={styles.ticketImage}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleImageClick(getImageSrc(ticket.imageName));
                                             }}
-                                            onError={(e) => { 
-                                                e.target.onerror = null; 
-                                                e.target.src = `${process.env.PUBLIC_URL}/images/default.png`; 
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = `${process.env.PUBLIC_URL}/images/default.png`;
                                             }}
                                             tabIndex={0}
                                             role="button"
@@ -161,11 +161,11 @@ function MyTickets() {
                                     )}
                                 </td>
                                 <td className={
-                                    ticket.ticketStatus === 'closed' 
-                                    ? styles.closed 
-                                    : ticket.ticketStatus === 'in-progress' 
-                                    ? styles.inProgress 
-                                    : styles.open
+                                    ticket.ticketStatus === 'closed'
+                                        ? styles.closed
+                                        : ticket.ticketStatus === 'in-progress'
+                                            ? styles.inProgress
+                                            : styles.open
                                 }>
                                     {ticket.ticketStatus}
                                 </td>
@@ -177,58 +177,30 @@ function MyTickets() {
                 <p>No tickets found.</p>
             )}
 
-            <div className={styles.buttonContainer}>
-                <Button variant="success" onClick={() => setShowModal(true)}>
-                    Create New Ticket
-                </Button>
-                <span className={styles.buttonSpacing} />
-                <Button variant="primary" onClick={() => navigate('/student')}>
-                    Back to Dashboard
-                </Button>
-            </div>
-
-            {/* Create Ticket Modal */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered animation={false}>
+            {/* Ticket Details Modal */}
+            <Modal show={selectedTicket !== null} onHide={handleCloseDetailsModal} centered animation={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create New Ticket</Modal.Title>
+                    <Modal.Title>Ticket Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form.Group className="mb-3" controlId="ticketDescription">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control 
-                            as="textarea" 
-                            rows={3} 
-                            value={ticketDescription} 
-                            onChange={(e) => setTicketDescription(e.target.value)}
-                        />
-                    </Form.Group>
+                    {selectedTicket && (
+                        <>
+                            <p><strong>Ticket ID:</strong> {selectedTicket.ticketId}</p>
+                            <p><strong>Description:</strong> {selectedTicket.ticket}</p>
+                            <p><strong>Category:</strong> {selectedTicket.category}</p>
+                            <p><strong>Status:</strong> {selectedTicket.ticketStatus}</p>
+                            <p><strong>Date Submitted:</strong> {selectedTicket.dateSubmitted}</p>
+                            <p>
+                                <strong>Feedback:</strong>
+                            </p>
+                            {selectedTicket.feedback ? selectedTicket.feedback : " No Feedback"}
 
-                    <Form.Group className="mb-3" controlId="ticketCategory">
-                        <Form.Label>Category</Form.Label>
-                        <Form.Select 
-                            value={ticketCategory} 
-                            onChange={(e) => setTicketCategory(e.target.value)}
-                        >
-                            <option value="Management">Management</option>
-                            <option value="IT">IT</option>
-                            <option value="Cleaning">Cleaning</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="ticketImage">
-                        <Form.Label>Attach Image (Optional)</Form.Label>
-                        <Form.Control type="file" onChange={handleImageChange} />
-                        {imagePreview && (
-                            <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
-                        )}
-                    </Form.Group>
+                        </>
+                    )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={handleSubmitTicket}>
-                        Submit Ticket
+                    <Button variant="secondary" onClick={handleCloseDetailsModal}>
+                        Close
                     </Button>
                 </Modal.Footer>
             </Modal>
