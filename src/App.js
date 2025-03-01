@@ -6,7 +6,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MyTickets from "./components/Mytickets/MyTickets";
 import Faculty from "./components/modules/faculty/Faculty";
 import Admin from "./components/modules/admin/Admin";
-import CreateTicket from "./components/Mytickets/CreateTicket";
 
 
 
@@ -20,7 +19,6 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/admin/*" element={<Admin />} />
 
-        <Route path="/create" element={<CreateTicket />} />
 
 
         <Route path="/" element={<Login />} />
