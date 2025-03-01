@@ -1,35 +1,29 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './mytickets.module.css';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import axios from 'axios';
+import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./mytickets.module.css";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import axios from "axios";
 
 function MyTickets() {
     const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
     const [student, setStudent] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [ticketDescription, setTicketDescription] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [ticketCategory, setTicketCategory] = useState("Management");
-
     const [selectedTicket, setSelectedTicket] = useState(null);
 
-    const [imageModal, setImageModal] = useState({
-        isVisible: false,
-        src: null
-    });
-
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('studentUser'));
+        const storedUser = JSON.parse(localStorage.getItem("studentUser"));
         if (storedUser) {
             setStudent(storedUser);
             fetchTickets(storedUser.id);
         } else {
-            navigate('/'); // Redirect if not logged in
+            navigate("/");
         }
     }, [navigate]);
 
@@ -53,19 +47,13 @@ function MyTickets() {
     const handleSubmitTicket = useCallback(async () => {
         if (!ticketDescription.trim()) return;
 
-        let imageName = null;
-
-        if (selectedImage) {
-            imageName = selectedImage.name;
-        }
-
         const newTicket = {
             ticketId: Date.now().toString(),
             ticket: ticketDescription,
-            ticketStatus: 'open',
-            imageName: imageName,
+            ticketStatus: "open",
+            imageName: selectedImage ? selectedImage.name : null,
             category: ticketCategory,
-            dateSubmitted: new Date().toISOString().split('T')[0]
+            dateSubmitted: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
         };
 
         try {
@@ -77,7 +65,7 @@ function MyTickets() {
             await axios.put(`http://localhost:8000/Student/${student.id}`, updatedStudent);
 
             setTickets(updatedStudent.tickets);
-            setShowModal(false);
+            setShowCreateModal(false);
             setTicketDescription("");
             setSelectedImage(null);
             setImagePreview(null);
@@ -91,32 +79,14 @@ function MyTickets() {
         return `${process.env.PUBLIC_URL}/images/${imageName}`;
     };
 
-    const handleImageClick = useCallback((imageSrc) => {
-        setImageModal({
-            isVisible: true,
-            src: imageSrc
-        });
-    }, []);
-
-    const handleCloseImageModal = useCallback(() => {
-        setImageModal({
-            isVisible: false,
-            src: null
-        });
-    }, []);
-
-    const handleTicketClick = (ticket) => {
-        setSelectedTicket(ticket);
-    };
-
-    const handleCloseDetailsModal = () => {
-        setSelectedTicket(null);
-    };
-
     return (
         <div className={styles.container}>
             <h2>My Tickets</h2>
             <p>Welcome, {student?.name}. Here are your submitted tickets:</p>
+
+            <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+                Create New Ticket
+            </Button>
 
             {tickets.length > 0 ? (
                 <table className={styles.table}>
@@ -131,11 +101,7 @@ function MyTickets() {
                     </thead>
                     <tbody>
                         {tickets.map((ticket) => (
-                            <tr
-                                key={ticket.ticketId}
-                                onClick={() => handleTicketClick(ticket)}
-                                className={styles.ticketRow}
-                            >
+                            <tr key={ticket.ticketId} onClick={() => setSelectedTicket(ticket)} className={styles.ticketRow}>
                                 <td>{ticket.ticketId}</td>
                                 <td>{ticket.ticket}</td>
                                 <td>{ticket.category}</td>
@@ -145,27 +111,19 @@ function MyTickets() {
                                             src={getImageSrc(ticket.imageName)}
                                             alt={`Ticket ${ticket.ticketId}`}
                                             className={styles.ticketImage}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleImageClick(getImageSrc(ticket.imageName));
-                                            }}
                                             onError={(e) => {
                                                 e.target.onerror = null;
                                                 e.target.src = `${process.env.PUBLIC_URL}/images/default.png`;
                                             }}
-                                            tabIndex={0}
-                                            role="button"
                                         />
                                     ) : (
                                         "No Image"
                                     )}
                                 </td>
                                 <td className={
-                                    ticket.ticketStatus === 'closed'
-                                        ? styles.closed
-                                        : ticket.ticketStatus === 'in-progress'
-                                            ? styles.inProgress
-                                            : styles.open
+                                    ticket.ticketStatus === "closed" ? styles.closed :
+                                    ticket.ticketStatus === "in-progress" ? styles.inProgress :
+                                    styles.open
                                 }>
                                     {ticket.ticketStatus}
                                 </td>
@@ -177,8 +135,55 @@ function MyTickets() {
                 <p>No tickets found.</p>
             )}
 
+            {/* Create Ticket Modal */}
+            <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} centered animation={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create New Ticket</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="ticketDescription">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={ticketDescription}
+                                onChange={(e) => setTicketDescription(e.target.value)}
+                                placeholder="Enter ticket description"
+                            />
+                        </Form.Group>
+
+                        <Form.Group controlId="ticketCategory">
+                            <Form.Label>Category</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={ticketCategory}
+                                onChange={(e) => setTicketCategory(e.target.value)}
+                            >
+                                <option>Management</option>
+                                <option>IT</option>
+                                <option>Cleaning</option>
+                            </Form.Control>
+                        </Form.Group>
+
+                        <Form.Group controlId="ticketImage">
+                            <Form.Label>Upload Image</Form.Label>
+                            <Form.Control type="file" onChange={handleImageChange} />
+                            {imagePreview && <img src={imagePreview} alt="Preview" className={styles.imagePreview} />}
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleSubmitTicket}>
+                        Submit Ticket
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
             {/* Ticket Details Modal */}
-            <Modal show={selectedTicket !== null} onHide={handleCloseDetailsModal} centered animation={false}>
+            <Modal show={selectedTicket !== null} onHide={() => setSelectedTicket(null)} centered animation={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Ticket Details</Modal.Title>
                 </Modal.Header>
@@ -190,16 +195,12 @@ function MyTickets() {
                             <p><strong>Category:</strong> {selectedTicket.category}</p>
                             <p><strong>Status:</strong> {selectedTicket.ticketStatus}</p>
                             <p><strong>Date Submitted:</strong> {selectedTicket.dateSubmitted}</p>
-                            <p>
-                                <strong>Feedback:</strong>
-                            </p>
-                            {selectedTicket.feedback ? selectedTicket.feedback : " No Feedback"}
-
+                            <p><strong>Feedback:</strong> {selectedTicket.feedback || "No Feedback"}</p>
                         </>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseDetailsModal}>
+                    <Button variant="secondary" onClick={() => setSelectedTicket(null)}>
                         Close
                     </Button>
                 </Modal.Footer>

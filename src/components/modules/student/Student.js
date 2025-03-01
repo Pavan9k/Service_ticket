@@ -60,7 +60,7 @@ function Student() {
                         <>
                             <h2>Welcome, {student.name}</h2>
                             <ul>
-                                <li>
+                                {/* <li>
                                     <Link className={styles.underLine} to="/profile">
                                         <FaUserCircle /> Profile
                                     </Link>
@@ -69,12 +69,12 @@ function Student() {
                                     <Link className={styles.underLine} to="/settings">
                                         <FaCog /> Settings
                                     </Link>
-                                </li>
-                                <li>
-                                    <Link className={styles.underLine} to="/support">
-                                        <FaQuestionCircle /> Help & Support
+                                </li> */}
+                                {/* <li>
+                                    <Link className={styles.underLine} to="/create">
+                                        <FaQuestionCircle /> Create Ticket
                                     </Link>
-                                </li>
+                                </li> */}
                                 <li>
                                     <Link className={styles.underLine} to="/my-tickets">
                                         <FaTicketAlt /> My Tickets

@@ -1,157 +1,165 @@
 {
-    "Student": [
+  "Student": [
+    {
+      "id": "111",
+      "name": "pavan",
+      "pass": "111",
+      "role": "Student",
+      "tickets": [
         {
-            "id": "111",
-            "name": "pavan",
-            "pass": "111",
-            "role": "Student",
-            "tickets": [
-                {
-                    "ticketId": "1740205174290",
-                    "ticket": "asda",
-                    "ticketStatus": "closed",
-                    "imageName": "1.jpg",
-                    "category": "Management",
-                    "dateSubmitted": "2025-02-18",
-                    "feedback": "Problem fixed, please confirm."
-                },
-                {
-                    "ticketId": "1740206385526",
-                    "ticket": "asasdasda",
-                    "ticketStatus": "open",
-                    "imageName": "3.jpg",
-                    "category": "Cleaning",
-                    "dateSubmitted": "2025-02-11"
-                },
-                {
-                    "ticketId": "1740320564402",
-                    "ticket": "fees sadsdads asda",
-                    "ticketStatus": "open",
-                    "imageName": "1.jpg",
-                    "category": "Management",
-                    "dateSubmitted": "2025-02-23"
-                }
-            ]
+          "ticketId": "1740205174290",
+          "ticket": "asda",
+          "ticketStatus": "closed",
+          "imageName": "1.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-02-18",
+          "feedback": "Problem fixed, please confirm."
         },
         {
-            "id": "222",
-            "name": "kumar",
-            "pass": "222",
-            "tickets": [
-                {
-                    "ticketId": "1740205413219",
-                    "ticket": "ticket 2",
-                    "ticketStatus": "in-progress",
-                    "imageName": "2.jpg",
-                    "category": "IT",
-                    "dateSubmitted": "2025-02-17"
-                },
-                {
-                    "ticketId": "1740208230646",
-                    "ticket": "asdasdasdasdas",
-                    "ticketStatus": "open",
-                    "imageName": "3.jpg",
-                    "category": "IT",
-                    "dateSubmitted": "2025-01-27"
-                },
-                {
-                    "ticketId": "1740208408238",
-                    "ticket": "a",
-                    "ticketStatus": "open",
-                    "imageName": "1.jpg",
-                    "category": "Management",
-                    "dateSubmitted": "2025-01-29"
-                }
-            ]
+          "ticketId": "1740206385526",
+          "ticket": "asasdasda",
+          "ticketStatus": "open",
+          "imageName": "3.jpg",
+          "category": "Cleaning",
+          "dateSubmitted": "2025-02-11"
         },
         {
-            "id": "333",
-            "name": "naveen",
-            "pass": "333",
-            "tickets": []
+          "ticketId": "1740320564402",
+          "ticket": "fees sadsdads asda",
+          "ticketStatus": "open",
+          "imageName": "1.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-02-23"
         },
         {
-            "id": "101",
-            "name": "Student 1",
-            "pass": "101",
-            "role": "Student",
-            "tickets": [
-                {
-                    "ticketId": "1011",
-                    "ticket": "Issue A",
-                    "ticketStatus": "open",
-                    "imageName": "1.jpg",
-                    "category": "IT",
-                    "dateSubmitted": "2025-02-19"
-                },
-                {
-                    "ticketId": "1012",
-                    "ticket": "Issue B",
-                    "ticketStatus": "in-progress",
-                    "imageName": "2.jpg",
-                    "category": "Cleaning",
-                    "dateSubmitted": "2025-01-16"
-                },
-                {
-                    "ticketId": "1013",
-                    "ticket": "Issue C",
-                    "ticketStatus": "closed",
-                    "imageName": "3.jpg",
-                    "category": "Management",
-                    "dateSubmitted": "2025-01-05",
-                    "feedback": "Solution implemented, no further action required."
-                }
-            ]
-        },
-        {
-            "id": "102",
-            "name": "Student 2",
-            "pass": "102",
-            "role": "Student",
-            "tickets": [
-                {
-                    "ticketId": "1021",
-                    "ticket": "Issue A",
-                    "ticketStatus": "open",
-                    "imageName": "1.jpg",
-                    "category": "IT",
-                    "dateSubmitted": "2025-01-21"
-                },
-                {
-                    "ticketId": "1022",
-                    "ticket": "Issue B",
-                    "ticketStatus": "in-progress",
-                    "imageName": "2.jpg",
-                    "category": "Cleaning",
-                    "dateSubmitted": "2025-01-22"
-                },
-                {
-                    "ticketId": "1023",
-                    "ticket": "Issue C",
-                    "ticketStatus": "closed",
-                    "imageName": "3.jpg",
-                    "category": "Management",
-                    "dateSubmitted": "2025-01-15",
-                    "feedback": "Issue resolved successfully."
-                }
-            ]
+          "ticketId": "1740811365237",
+          "ticket": "123123",
+          "ticketStatus": "open",
+          "imageName": "3.jpg",
+          "category": "Cleaning",
+          "dateSubmitted": "2025-03-01"
         }
-    ],
-    "Faculty": [
+      ]
+    },
+    {
+      "id": "222",
+      "name": "kumar",
+      "pass": "222",
+      "tickets": [
         {
-            "id": "444",
-            "name": "John",
-            "pass": "444"
+          "ticketId": "1740205413219",
+          "ticket": "ticket 2",
+          "ticketStatus": "in-progress",
+          "imageName": "2.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-02-17"
         },
         {
-            "id": "555",
-            "name": "Jane",
-            "pass": "555"
+          "ticketId": "1740208230646",
+          "ticket": "asdasdasdasdas",
+          "ticketStatus": "open",
+          "imageName": "3.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-01-27"
         },
         {
-            "id": "111",
-            "name": "Sam",
-            "pass": "111"
+          "ticketId": "1740208408238",
+          "ticket": "a",
+          "ticketStatus": "open",
+          "imageName": "1.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-01-29"
         }
-    ]
+      ]
+    },
+    {
+      "id": "333",
+      "name": "naveen",
+      "pass": "333",
+      "tickets": []
+    },
+    {
+      "id": "101",
+      "name": "Student 1",
+      "pass": "101",
+      "role": "Student",
+      "tickets": [
+        {
+          "ticketId": "1011",
+          "ticket": "Issue A",
+          "ticketStatus": "open",
+          "imageName": "1.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-02-19"
+        },
+        {
+          "ticketId": "1012",
+          "ticket": "Issue B",
+          "ticketStatus": "in-progress",
+          "imageName": "2.jpg",
+          "category": "Cleaning",
+          "dateSubmitted": "2025-01-16"
+        },
+        {
+          "ticketId": "1013",
+          "ticket": "Issue C",
+          "ticketStatus": "closed",
+          "imageName": "3.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-01-05",
+          "feedback": "Solution implemented, no further action required."
+        }
+      ]
+    },
+    {
+      "id": "102",
+      "name": "Student 2",
+      "pass": "102",
+      "role": "Student",
+      "tickets": [
+        {
+          "ticketId": "1021",
+          "ticket": "Issue A",
+          "ticketStatus": "open",
+          "imageName": "1.jpg",
+          "category": "IT",
+          "dateSubmitted": "2025-01-21"
+        },
+        {
+          "ticketId": "1022",
+          "ticket": "Issue B",
+          "ticketStatus": "in-progress",
+          "imageName": "2.jpg",
+          "category": "Cleaning",
+          "dateSubmitted": "2025-01-22"
+        },
+        {
+          "ticketId": "1023",
+          "ticket": "Issue C",
+          "ticketStatus": "closed",
+          "imageName": "3.jpg",
+          "category": "Management",
+          "dateSubmitted": "2025-01-15",
+          "feedback": "Issue resolved successfully."
+        }
+      ]
+    }
+  ],
+  "Faculty": [
+    {
+      "id": "444",
+      "name": "John",
+      "pass": "444"
+    },
+    {
+      "id": "555",
+      "name": "Jane",
+      "pass": "555"
+    },
+    {
+      "id": "111",
+      "name": "Sam",
+      "pass": "111"
+    }
+  ]
 }
